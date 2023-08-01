@@ -5,7 +5,7 @@
  * @format
  */
 
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {
@@ -30,13 +30,14 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from './src/screens/login';
 import SignUp from './src/screens/signUp';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import CustomIcon from 'react-native-vector-icons/AntDesign';
 import Otp from './src/screens/otp';
-
+import SideBar from './src/components/sidebar';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -77,41 +78,59 @@ function App(): JSX.Element {
 
   const Stack = createNativeStackNavigator();
 
+  const Drawer = createDrawerNavigator();
 
   function MyTabs() {
     return (
-      <Tab.Navigator 
-      screenOptions={({  }) => {
-        return {
-          headerShown: false,
-          tabBarIcon: ({ focused, color, size }) => {
-            return (
-              <CustomIcon name="windows" size={20} color="red" />
-
-            )
-          },
-        }
-
-
-      }}
-     >
+      <Tab.Navigator
+        screenOptions={({}) => {
+          return {
+            headerShown: false,
+            tabBarIcon: ({focused, color, size}) => {
+              return <CustomIcon name="windows" size={20} color="red" />;
+            },
+          };
+        }}>
         <Tab.Screen name="Login" component={Login} />
         <Tab.Screen name="SignUp" component={SignUp} />
       </Tab.Navigator>
     );
   }
 
+  function MyDrawer() {
+    return (
+      <Drawer.Navigator
+        screenOptions={{
+          headerShown: false,
+          drawerPosition: 'left',
+          drawerStyle: {
+            //width: wdp(75),
+          },
+        }}
+        initialRouteName="Dashboard"
+        backBehavior="initialRoute"
+        drawerStyle={{ width: '80%' }}
+       drawerContent={props => <SideBar {...props} />}
+      >
+        <Drawer.Screen name="Dashboard" component={MyTabs} />
+      </Drawer.Navigator>
+    )
+  }
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'transparent'}}>
       {/* navigation declaration */}
       <NavigationContainer>
-      <Stack.Navigator screenOptions={{
-        //headerShown: false
-      }}>
-        <Stack.Screen name="MainScreen" component={MyTabs} />
-        <Stack.Screen name="Otp" component={Otp} />
-      </Stack.Navigator>
-    </NavigationContainer>
+        <Stack.Navigator
+          screenOptions={
+            {
+              //headerShown: false
+            }
+          }>
+          <Stack.Screen name="MainScreen" component={MyDrawer} />
+          <Stack.Screen name="Otp" component={Otp} />
+        </Stack.Navigator>
+      </NavigationContainer>
 
       {/* <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
